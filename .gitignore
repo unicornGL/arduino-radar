@@ -1,1 +1,29 @@
-.vscode
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+.npm/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Log
+*.log
+
+# Arduino
+*.hex
+*.elf
+
+# Others
+*.tmp
+*.bak
+*.backup
