@@ -16,7 +16,7 @@ const svg = d3
   .attr("height", svgHeight)
   .attr("viewBox", `0 0 ${svgWidth} ${svgHeight}`)
 
-//
+// 增加軍事風格濾鏡
 const defs = svg.append("defs")
 const filter = defs.append("filter").attr("id", "glow")
 
@@ -28,8 +28,11 @@ filter
 const feMerge = filter.append("feMerge")
 feMerge.append("feMergeNode").attr("in", "coloredBlur")
 feMerge.append("feMergeNode").attr("in", "SourceGraphic")
+
 // Utils
 const toRads = (angle) => ((angle - 90) * Math.PI) / 180
+const getZuluTime = () =>
+  new Date().toUTCString().slice(17, 22).replace(":", "") + "Z"
 
 // 創建極坐標網格
 const grid = svg
@@ -91,44 +94,36 @@ angles.forEach((angle) => {
     .attr("text-anchor", "middle")
     .attr("fill", "#3a3")
     .style("font-family", "'DS-Digital', sans-serif")
-    .style("font-size", `${svgWidth * 0.018}px`)
+    .style("font-size", `${svgWidth * 0.015}px`)
     .style("filter", "url(#glow)")
     .text(`${angle + 90}°`)
 })
 
-// 添加方向、距離和物體資訊
-const baseY = svgHeight * 0.725
-const fontSize = `${svgWidth * 0.015}px`
+// 添加方向、距離、時間資訊和單位說明
+const createInfoText = (x, text) => {
+  return svg
+    .append("text")
+    .attr("x", svgWidth * x)
+    .attr("y", svgHeight * 0.725)
+    .attr("fill", "#3a3")
+    .style("font-family", "'DS-Digital', sans-serif")
+    .style("font-size", `${svgWidth * 0.018}px`)
+    .style("filter", "url(#glow)")
+    .text(text)
+}
 
-// 方向資訊
+createInfoText(0.125, "BRG: 101")
+createInfoText(0.218, "RNG: 50")
+createInfoText(0.313, `T: ${getZuluTime()}`)
+
+// TODO: 待確認位置和字體大小
 svg
   .append("text")
-  .attr("x", svgWidth * 0.125)
-  .attr("y", baseY)
+  .attr("x", svgWidth * 0)
+  .attr("y", svgHeight * 0)
+  .attr("text-anchor", "start")
   .attr("fill", "#3a3")
   .style("font-family", "'DS-Digital', sans-serif")
-  .style("font-size", fontSize)
+  .style("font-size", `${svgWidth * 0}px`)
   .style("filter", "url(#glow)")
-  .text("Angle: 101°")
-
-// 距離資訊
-svg
-  .append("text")
-  .attr("x", svgWidth * 0.22)
-  .attr("y", baseY)
-  .attr("fill", "#3a3")
-  .style("font-family", "'DS-Digital', sans-serif")
-  .style("font-size", fontSize)
-  .style("filter", "url(#glow)")
-  .text("Dist: 50")
-
-// 物體資訊
-svg
-  .append("text")
-  .attr("x", svgWidth * 0.313)
-  .attr("y", baseY)
-  .attr("fill", "#3a3")
-  .style("font-family", "'DS-Digital', sans-serif")
-  .style("font-size", fontSize)
-  .style("filter", "url(#glow)")
-  .text("Object: Out of range")
+  .text("BRG: DEG | RNG: CM | T: ZULU")
