@@ -2,12 +2,13 @@ import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm"
 
 const START_ANGLE = 0
 const END_ANGLE = 180
+const SCAN_DURATION = 7200
 
 const svgElement = document.getElementById("radar")
 const svgWidth = svgElement.width.baseVal.value
 const svgHeight = svgElement.height.baseVal.value
 const centerX = svgWidth * 0.5
-const centerY = svgHeight * 0.7
+const centerY = svgHeight * 0.745
 const r = Math.min(svgWidth, svgHeight) * 0.5
 
 const svg = d3
@@ -68,7 +69,7 @@ circles.forEach((d) => {
     .attr("text-anchor", "middle")
     .attr("fill", "#3a3")
     .style("font-family", "'DS-Digital', sans-serif")
-    .style("font-size", `${svgWidth * 0.015}px`)
+    .style("font-size", `${svgWidth * 0.018}px`)
     .style("filter", "url(#glow)")
     .text(d)
 })
@@ -90,12 +91,12 @@ angles.forEach((angle) => {
 
   grid
     .append("text")
-    .attr("x", (r + 30) * Math.cos(rads))
-    .attr("y", (r + 30) * Math.sin(rads))
+    .attr("x", (r + 28) * Math.cos(rads))
+    .attr("y", (r + 28) * Math.sin(rads))
     .attr("text-anchor", "middle")
     .attr("fill", "#3a3")
     .style("font-family", "'DS-Digital', sans-serif")
-    .style("font-size", `${svgWidth * 0.015}px`)
+    .style("font-size", `${svgWidth * 0.018}px`)
     .style("filter", "url(#glow)")
     .text(`${angle}°`)
 })
@@ -105,7 +106,7 @@ const createInfoText = (x, text) => {
   return svg
     .append("text")
     .attr("x", svgWidth * x)
-    .attr("y", svgHeight * 0.725)
+    .attr("y", svgHeight * 0.77)
     .attr("fill", "#3a3")
     .style("font-family", "'DS-Digital', sans-serif")
     .style("font-size", `${svgWidth * 0.018}px`)
@@ -117,14 +118,40 @@ createInfoText(0.125, "BRG: 101")
 createInfoText(0.218, "RNG: 50")
 createInfoText(0.313, `T: ${getZuluTime()}`)
 
-// TODO: 待確認位置和字體大小
-svg
-  .append("text")
-  .attr("x", svgWidth * 0)
-  .attr("y", svgHeight * 0)
-  .attr("text-anchor", "start")
-  .attr("fill", "#3a3")
-  .style("font-family", "'DS-Digital', sans-serif")
-  .style("font-size", `${svgWidth * 0}px`)
-  .style("filter", "url(#glow)")
-  .text("BRG: DEG | RNG: CM | T: ZULU")
+// 繪製掃描動畫
+const scanLine = grid
+  .append("line")
+  .attr("x1", 0)
+  .attr("y1", 0)
+  .attr("x2", -r)
+  .attr("y2", 0)
+  .attr("stroke", "#0f0")
+  .attr("stroke-width", 2)
+  .attr("opacity", 0.7)
+
+const scanArea = grid
+  .append("path")
+  .attr("fill", "#0f0")
+  .attr("fill-opacity", 0.2)
+
+const scan = () => {
+  let angle = 0
+
+  d3.timer((elapsed) => {
+    angle =
+      ((elapsed % SCAN_DURATION) / SCAN_DURATION) * (END_ANGLE - START_ANGLE)
+
+    scanLine.attr("transform", `rotate(${angle})`)
+
+    const arcPath = d3
+      .arc()
+      .innerRadius(0)
+      .outerRadius(r)
+      .startAngle(toRads(angle)) // 使掃描區域跟隨掃描線移動
+      .endAngle(toRads(0))
+
+    scanArea.attr("d", arcPath)
+  })
+}
+
+scan()
