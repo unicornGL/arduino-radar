@@ -30,7 +30,8 @@ feMerge.append("feMergeNode").attr("in", "coloredBlur")
 feMerge.append("feMergeNode").attr("in", "SourceGraphic")
 
 // Utils
-const toRads = (angle) => ((angle - 90) * Math.PI) / 180
+const rotateBearing = (angle) => angle - 90
+const toRads = (angle) => (rotateBearing(angle) * Math.PI) / 180
 const getZuluTime = () =>
   new Date().toUTCString().slice(17, 22).replace(":", "") + "Z"
 
@@ -73,10 +74,10 @@ circles.forEach((d) => {
 })
 
 // 繪製放射線和標註角度
-const angles = [-90, -60, -30, 0, 30, 60, 90]
+const angles = [0, 30, 60, 90, 120, 150, 180]
 
 angles.forEach((angle) => {
-  const rads = toRads(angle)
+  const rads = toRads(rotateBearing(angle))
 
   grid
     .append("line")
@@ -96,7 +97,7 @@ angles.forEach((angle) => {
     .style("font-family", "'DS-Digital', sans-serif")
     .style("font-size", `${svgWidth * 0.015}px`)
     .style("filter", "url(#glow)")
-    .text(`${angle + 90}°`)
+    .text(`${angle}°`)
 })
 
 // 添加方向、距離、時間資訊和單位說明
