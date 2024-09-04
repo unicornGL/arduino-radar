@@ -155,3 +155,35 @@ const scan = () => {
 }
 
 scan()
+
+// TODO: dummy data
+// let bearing = 0
+// let range = 200
+// let direction = 1 // 1: clockwise / -1: counter-clockwise
+
+// setInterval(() => {
+//   if (direction > 0) {
+//     bearing++
+//     if (bearing >= 180) {
+//       direction = -1
+//     }
+//   } else if (direction < 0) {
+//     bearing--
+//     if (bearing <= 0) {
+//       direction = 1
+//     }
+//   }
+
+//   range = Math.random() * 1000
+//   if (range > 200) range = 200
+
+//   console.log("bearing", bearing)
+//   console.log("range", range)
+//   console.log("direction", direction)
+
+//   return {
+//     bearing,
+//     range,
+//     direction,
+//   }
+// }, 40)
