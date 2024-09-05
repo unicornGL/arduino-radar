@@ -11,6 +11,8 @@ const centerX = svgWidth * 0.5
 const centerY = svgHeight * 0.745
 const r = Math.min(svgWidth, svgHeight) * 0.5
 
+let lastUpdateTime = ""
+
 const svg = d3
   .select("#radar")
   .attr("width", svgWidth)
@@ -119,35 +121,33 @@ const rangeText = createInfoText(0.218, "RNG: ")
 const timeText = createInfoText(0.313, `T: ${getZuluTime()}`)
 
 const updateScanResult = (angle, distance) => {
-  const rads = toRads(rotateBearing(angle))
+  const arcGenerator = (innerRadius, outerRadius) =>
+    d3
+      .arc()
+      .innerRadius(innerRadius)
+      .outerRadius(outerRadius)
+      .startAngle(toRads(angle - 0.5))
+      .endAngle(toRads(angle + 0.5))
 
-  const line = grid
-    .append("line")
-    .attr("x1", 0)
-    .attr("y1", 0)
-    .attr("x2", ((r * distance) / 200) * Math.cos(rads))
-    .attr("y2", ((r * distance) / 200) * Math.sin(rads))
-    .attr("stroke", "#3a3")
-    .attr("stroke-width", 4)
+  grid
+    .append("path")
+    .attr("d", arcGenerator(0, (distance / 200) * r))
+    .attr("fill", "#3a3")
     .attr("opacity", 1)
     .transition()
-    .duration(3600)
+    .duration(SCAN_DURATION / 2)
     .ease(d3.easeLinear)
     .attr("opacity", 0)
     .remove()
 
   if (distance < 200) {
-    const remainingLine = grid
-      .append("line")
-      .attr("x1", ((r * distance) / 200) * Math.cos(rads))
-      .attr("y1", ((r * distance) / 200) * Math.sin(rads))
-      .attr("x2", r * Math.cos(rads))
-      .attr("y2", r * Math.sin(rads))
-      .attr("stroke", "#8b0000")
-      .attr("stroke-width", 4)
+    grid
+      .append("path")
+      .attr("d", arcGenerator((distance / 200) * r, r))
+      .attr("fill", "#8b0000")
       .attr("opacity", 1)
       .transition()
-      .duration(3600)
+      .duration(SCAN_DURATION / 2)
       .ease(d3.easeLinear)
       .attr("opacity", 0)
       .remove()
@@ -155,6 +155,12 @@ const updateScanResult = (angle, distance) => {
 
   bearingText.text(`BRG: ${angle.toFixed()}`)
   rangeText.text(`RNG: ${distance.toFixed()}`)
+
+  const currentTime = getZuluTime()
+  if (currentTime !== lastUpdateTime) {
+    timeText.text(`T: ${currentTime}`)
+    lastUpdateTime = currentTime
+  }
 }
 
 // TODO: dummy
