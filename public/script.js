@@ -118,7 +118,7 @@ const bearingText = createInfoText(0.125, "BRG: ")
 const rangeText = createInfoText(0.218, "RNG: ")
 const timeText = createInfoText(0.313, `T: ${getZuluTime()}`)
 
-const drawScanLine = (angle, distance) => {
+const updateScanResult = (angle, distance) => {
   const rads = toRads(rotateBearing(angle))
 
   const line = grid
@@ -130,8 +130,6 @@ const drawScanLine = (angle, distance) => {
     .attr("stroke", "#3a3")
     .attr("stroke-width", 4)
     .attr("opacity", 1)
-
-  line
     .transition()
     .duration(3600)
     .ease(d3.easeLinear)
@@ -148,8 +146,6 @@ const drawScanLine = (angle, distance) => {
       .attr("stroke", "#8b0000")
       .attr("stroke-width", 4)
       .attr("opacity", 1)
-
-    remainingLine
       .transition()
       .duration(3600)
       .ease(d3.easeLinear)
@@ -157,7 +153,6 @@ const drawScanLine = (angle, distance) => {
       .remove()
   }
 
-  // 更新方位角和距離信息
   bearingText.text(`BRG: ${angle.toFixed()}`)
   rangeText.text(`RNG: ${distance.toFixed()}`)
 }
@@ -183,7 +178,7 @@ const dummyScan = () => {
 
     range = Math.min(Math.random() * 500, 200)
 
-    drawScanLine(bearing, range)
+    updateScanResult(bearing, range)
   }, 40)
 }
 
