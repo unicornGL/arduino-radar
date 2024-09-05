@@ -114,76 +114,77 @@ const createInfoText = (x, text) => {
     .text(text)
 }
 
-createInfoText(0.125, "BRG: 101")
-createInfoText(0.218, "RNG: 50")
-createInfoText(0.313, `T: ${getZuluTime()}`)
+const bearingText = createInfoText(0.125, "BRG: ")
+const rangeText = createInfoText(0.218, "RNG: ")
+const timeText = createInfoText(0.313, `T: ${getZuluTime()}`)
 
-// 繪製掃描動畫
-const scanLine = grid
-  .append("line")
-  .attr("x1", 0)
-  .attr("y1", 0)
-  .attr("x2", -r)
-  .attr("y2", 0)
-  .attr("stroke", "#0f0")
-  .attr("stroke-width", 2)
-  .attr("opacity", 0.7)
+const drawScanLine = (angle, distance) => {
+  const rads = toRads(rotateBearing(angle))
 
-const scanArea = grid
-  .append("path")
-  .attr("fill", "#0f0")
-  .attr("fill-opacity", 0.2)
+  const line = grid
+    .append("line")
+    .attr("x1", 0)
+    .attr("y1", 0)
+    .attr("x2", ((r * distance) / 200) * Math.cos(rads))
+    .attr("y2", ((r * distance) / 200) * Math.sin(rads))
+    .attr("stroke", "#3a3")
+    .attr("stroke-width", 4)
+    .attr("opacity", 1)
 
-const scan = () => {
-  let angle = 0
+  line
+    .transition()
+    .duration(3600)
+    .ease(d3.easeLinear)
+    .attr("opacity", 0)
+    .remove()
 
-  d3.timer((elapsed) => {
-    angle =
-      ((elapsed % SCAN_DURATION) / SCAN_DURATION) * (END_ANGLE - START_ANGLE)
+  if (distance < 200) {
+    const remainingLine = grid
+      .append("line")
+      .attr("x1", ((r * distance) / 200) * Math.cos(rads))
+      .attr("y1", ((r * distance) / 200) * Math.sin(rads))
+      .attr("x2", r * Math.cos(rads))
+      .attr("y2", r * Math.sin(rads))
+      .attr("stroke", "#8b0000")
+      .attr("stroke-width", 4)
+      .attr("opacity", 1)
 
-    scanLine.attr("transform", `rotate(${angle})`)
+    remainingLine
+      .transition()
+      .duration(3600)
+      .ease(d3.easeLinear)
+      .attr("opacity", 0)
+      .remove()
+  }
 
-    const arcPath = d3
-      .arc()
-      .innerRadius(0)
-      .outerRadius(r)
-      .startAngle(toRads(angle)) // 使掃描區域跟隨掃描線移動
-      .endAngle(toRads(0))
-
-    scanArea.attr("d", arcPath)
-  })
+  // 更新方位角和距離信息
+  bearingText.text(`BRG: ${angle.toFixed()}`)
+  rangeText.text(`RNG: ${distance.toFixed()}`)
 }
 
-scan()
+// TODO: dummy
+const dummyScan = () => {
+  let bearing = 0
+  let range = 200
+  let direction = 1 // 1: clockwise / -1: counter-clockwise
 
-// TODO: dummy data
-// let bearing = 0
-// let range = 200
-// let direction = 1 // 1: clockwise / -1: counter-clockwise
+  setInterval(() => {
+    if (direction > 0) {
+      bearing++
+      if (bearing >= 180) {
+        direction = -1
+      }
+    } else if (direction < 0) {
+      bearing--
+      if (bearing <= 0) {
+        direction = 1
+      }
+    }
 
-// setInterval(() => {
-//   if (direction > 0) {
-//     bearing++
-//     if (bearing >= 180) {
-//       direction = -1
-//     }
-//   } else if (direction < 0) {
-//     bearing--
-//     if (bearing <= 0) {
-//       direction = 1
-//     }
-//   }
+    range = Math.min(Math.random() * 500, 200)
 
-//   range = Math.random() * 1000
-//   if (range > 200) range = 200
+    drawScanLine(bearing, range)
+  }, 40)
+}
 
-//   console.log("bearing", bearing)
-//   console.log("range", range)
-//   console.log("direction", direction)
-
-//   return {
-//     bearing,
-//     range,
-//     direction,
-//   }
-// }, 40)
+setTimeout(dummyScan, 3000)
