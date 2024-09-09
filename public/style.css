@@ -1,7 +1,7 @@
 @font-face {
   font-family: "DS-Digital";
-  src: url("../fonts/DS-DIGI.woff") format("woff"),
-    url("../fonts/DS-DIGI.ttf") format("truetype");
+  src: url("fonts/DS-DIGI.woff") format("woff"),
+    url("fonts/DS-DIGI.ttf") format("truetype");
   font-display: swap;
 }
 
