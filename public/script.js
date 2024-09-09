@@ -19,19 +19,6 @@ const svg = d3
   .attr("height", svgHeight)
   .attr("viewBox", `0 0 ${svgWidth} ${svgHeight}`)
 
-// 增加軍事風格濾鏡
-const defs = svg.append("defs")
-const filter = defs.append("filter").attr("id", "glow")
-
-filter
-  .append("feGaussianBlur")
-  .attr("stdDeviation", "2.5")
-  .attr("result", "coloredBlur")
-
-const feMerge = filter.append("feMerge")
-feMerge.append("feMergeNode").attr("in", "coloredBlur")
-feMerge.append("feMergeNode").attr("in", "SourceGraphic")
-
 // Utils
 const rotateBearing = (angle) => angle - 90
 const toRads = (angle) => (rotateBearing(angle) * Math.PI) / 180
@@ -61,18 +48,19 @@ circles.forEach((d) => {
     .attr("fill", "none")
     .attr("stroke", "#3a3")
     .attr("stroke-width", 4)
+    .attr("class", "glow-effect")
 
   grid
     .append("text")
     .attr("x", (d / 200) * r)
     .attr("y", 0)
-    .attr("dx", "-.6em")
+    .attr("dx", "-.7em")
     .attr("dy", "1em")
     .attr("text-anchor", "middle")
     .attr("fill", "#3a3")
     .style("font-family", "'DS-Digital', sans-serif")
     .style("font-size", `${svgWidth * 0.018}px`)
-    .style("filter", "url(#glow)")
+    .attr("class", "glow-effect")
     .text(d)
 })
 
@@ -90,16 +78,17 @@ angles.forEach((angle) => {
     .attr("y2", r * Math.sin(rads))
     .attr("stroke", "#3a3")
     .attr("stroke-width", 4)
+    .attr("class", "glow-effect")
 
   grid
     .append("text")
-    .attr("x", (r + 28) * Math.cos(rads))
-    .attr("y", (r + 28) * Math.sin(rads))
+    .attr("x", (r + 32) * Math.cos(rads))
+    .attr("y", (r + 32) * Math.sin(rads))
     .attr("text-anchor", "middle")
     .attr("fill", "#3a3")
     .style("font-family", "'DS-Digital', sans-serif")
     .style("font-size", `${svgWidth * 0.018}px`)
-    .style("filter", "url(#glow)")
+    .attr("class", "glow-effect")
     .text(`${angle}°`)
 })
 
@@ -112,7 +101,7 @@ const createInfoText = (x, text) => {
     .attr("fill", "#3a3")
     .style("font-family", "'DS-Digital', sans-serif")
     .style("font-size", `${svgWidth * 0.018}px`)
-    .style("filter", "url(#glow)")
+    .attr("class", "glow-effect")
     .text(text)
 }
 
@@ -126,8 +115,9 @@ const updateScanResult = (angle, distance) => {
       .arc()
       .innerRadius(innerRadius)
       .outerRadius(outerRadius)
-      .startAngle(toRads(angle - 0.5))
-      .endAngle(toRads(angle + 0.5))
+      // 讓圓弧的角度略大於 1°，盡量減少圓弧之間的空隙
+      .startAngle(toRads(angle - 0.51))
+      .endAngle(toRads(angle + 0.51))
 
   grid
     .append("path")

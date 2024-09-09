@@ -20,3 +20,7 @@ body {
   justify-content: center;
   align-items: center;
 }
+
+.glow-effect {
+  filter: drop-shadow(0 0 1px #3a3) drop-shadow(0 0 2px #3a3);
+}
