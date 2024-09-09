@@ -1,4 +1,7 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm"
+import { io } from "https://cdn.socket.io/4.7.5/socket.io.esm.min.js"
+
+const socket = io("http://localhost:3000")
 
 // START_ANGLE 和 END_ANGLE 是雷達圖繪製用，MIN_ANGLE 和 MAX_ANGLE 是 Servo 最大可轉動角度
 const START_ANGLE = 0
@@ -110,7 +113,7 @@ const bearingText = createInfoText(0.125, "BRG: ")
 const rangeText = createInfoText(0.218, "RNG: ")
 const timeText = createInfoText(0.313, `T: ${getZuluTime()}`)
 
-const updateScanResult = (angle, distance) => {
+const updateScanResult = ({ angle, distance }) => {
   const arcGenerator = (innerRadius, outerRadius) =>
     d3
       .arc()
@@ -154,29 +157,6 @@ const updateScanResult = (angle, distance) => {
   }
 }
 
-// TODO: dummy
-const dummyScan = () => {
-  let bearing = 0
-  let range = 200
-  let direction = 1 // 1: clockwise / -1: counter-clockwise
-
-  setInterval(() => {
-    if (direction > 0) {
-      bearing++
-      if (bearing >= 180) {
-        direction = -1
-      }
-    } else if (direction < 0) {
-      bearing--
-      if (bearing <= 0) {
-        direction = 1
-      }
-    }
-
-    range = Math.min(Math.random() * 500, 200)
-
-    updateScanResult(bearing, range)
-  }, 40)
-}
-
-setTimeout(dummyScan, 3000)
+socket.on("radarData", (data) => {
+  updateScanResult(data)
+})
