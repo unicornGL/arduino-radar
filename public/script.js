@@ -1,8 +1,9 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm"
 
+// START_ANGLE 和 END_ANGLE 是雷達圖繪製用，MIN_ANGLE 和 MAX_ANGLE 是 Servo 最大可轉動角度
 const START_ANGLE = 0
 const END_ANGLE = 180
-const SCAN_DURATION = 7200
+const SCAN_DURATION = 7200 // SCAN_INTERVAL * (MAX_ANGLE - MIN_ANGLE)
 
 const svgElement = document.getElementById("radar")
 const svgWidth = svgElement.width.baseVal.value
@@ -126,7 +127,7 @@ const updateScanResult = (angle, distance) => {
     .attr("opacity", 1)
     .transition()
     .duration(SCAN_DURATION / 2)
-    .ease(d3.easeLinear)
+    .ease(d3.easeCubicIn) // equals to easePolyIn.exponent(3)
     .attr("opacity", 0)
     .remove()
 
@@ -138,7 +139,7 @@ const updateScanResult = (angle, distance) => {
       .attr("opacity", 1)
       .transition()
       .duration(SCAN_DURATION / 2)
-      .ease(d3.easeLinear)
+      .ease(d3.easeCubicIn) // equals to easePolyIn.exponent(3)
       .attr("opacity", 0)
       .remove()
   }
