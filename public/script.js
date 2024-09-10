@@ -6,7 +6,7 @@ const socket = io("http://localhost:3000")
 // START_ANGLE 和 END_ANGLE 是雷達圖繪製用，MIN_ANGLE 和 MAX_ANGLE 是 Servo 最大可轉動角度
 const START_ANGLE = 0
 const END_ANGLE = 180
-const SCAN_DURATION = 7200 // SCAN_INTERVAL * (MAX_ANGLE - MIN_ANGLE)
+const SCAN_DURATION = 6000 // SCAN_INTERVAL * (MAX_ANGLE - MIN_ANGLE)
 
 const svgElement = document.getElementById("radar")
 const svgWidth = svgElement.width.baseVal.value
