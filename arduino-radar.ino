@@ -11,7 +11,7 @@ constexpr int MIN_ANGLE = 15;
 constexpr int MAX_ANGLE = 165;
 constexpr int CENTER_ANGLE = 90;
 constexpr int SCAN_SPEED = 1;
-constexpr unsigned long SCAN_INTERVAL = 15;
+constexpr unsigned long SCAN_INTERVAL = 40;
 
 enum class ScanDirection {
     COUNTER_CLOCKWISE,
@@ -125,9 +125,7 @@ void rotateRadar() {
 
 void measureAndReportDistance() {
     float distance = distanceFilter.filter(sonar.ping_cm());
-    Serial.print("角度: ");
     Serial.print(currentAngle);
-    Serial.print(", 距離: ");
-    Serial.print(distance);
-    Serial.println(" cm");
+    Serial.print(",");
+    Serial.println(distance);
 }
