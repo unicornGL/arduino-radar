@@ -11,7 +11,7 @@ const { SerialPort } = require("serialport")
 const { ReadlineParser } = require("@serialport/parser-readline")
 const { log } = require("console")
 
-// 請依照各自系統調整
+// Please adjust due to your own system
 const port = new SerialPort({
   path: "/dev/cu.usbmodem1101",
   baudRate: 9600,

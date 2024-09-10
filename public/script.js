@@ -3,10 +3,11 @@ import { io } from "https://cdn.socket.io/4.7.5/socket.io.esm.min.js"
 
 const socket = io("http://localhost:3000")
 
-// START_ANGLE 和 END_ANGLE 是雷達圖繪製用，MIN_ANGLE 和 MAX_ANGLE 是 Servo 最大可轉動角度
-const START_ANGLE = 0
-const END_ANGLE = 180
-const SCAN_DURATION = 6000 // SCAN_INTERVAL * (MAX_ANGLE - MIN_ANGLE)
+const START_ANGLE = 0 // Minimum angle for drawing radar
+const END_ANGLE = 180 // Maximum angle for drawing radar
+// Note: SCAN_DURATION should match the value calculated in the Arduino sketch
+// It's typically SCAN_INTERVAL * (MAX_ANGLE - MIN_ANGLE) from the arduino-radar.ino
+const SCAN_DURATION = 6000
 
 const svgElement = document.getElementById("radar")
 const svgWidth = svgElement.width.baseVal.value
@@ -23,24 +24,24 @@ const svg = d3
   .attr("height", svgHeight)
   .attr("viewBox", `0 0 ${svgWidth} ${svgHeight}`)
 
-// Utils
+// Utility functions
 const rotateBearing = (angle) => angle - 90
 const toRads = (angle) => (rotateBearing(angle) * Math.PI) / 180
 const getZuluTime = () =>
   new Date().toUTCString().slice(17, 22).replace(":", "") + "Z"
 
-// 創建極坐標網格
+// Create polar coordinate grid
 const grid = svg
   .append("g")
   .attr("transform", `translate(${centerX},${centerY})`)
 
-// 繪製同心圓和標註距離
+// Draw concentric circles and label distances
 const circles = [50, 100, 150, 200]
 
 circles.forEach((d) => {
   const arc = d3
     .arc()
-    // 把 innerRadius 和 outerRadius 設為一樣來繪製線條
+    // Set innerRadius and outerRadius to the same value to draw a line
     .innerRadius((d / 200) * r)
     .outerRadius((d / 200) * r)
     .startAngle(toRads(START_ANGLE))
@@ -68,7 +69,7 @@ circles.forEach((d) => {
     .text(d)
 })
 
-// 繪製放射線和標註角度
+// Draw radial lines and label angles
 const angles = [0, 30, 60, 90, 120, 150, 180]
 
 angles.forEach((angle) => {
@@ -96,7 +97,7 @@ angles.forEach((angle) => {
     .text(`${angle}°`)
 })
 
-// 添加方向、距離、時間資訊和單位說明
+// Add direction, distance, time information and unit descriptions
 const createInfoText = (x, text) => {
   return svg
     .append("text")
@@ -119,7 +120,7 @@ const updateScanResult = ({ angle, distance }) => {
       .arc()
       .innerRadius(innerRadius)
       .outerRadius(outerRadius)
-      // 讓圓弧的角度略大於 1°，盡量減少圓弧之間的空隙
+      // Set arc angle slightly larger than 1° to minimize gaps between arcs
       .startAngle(toRads(angle - 0.51))
       .endAngle(toRads(angle + 0.51))
 
@@ -130,7 +131,7 @@ const updateScanResult = ({ angle, distance }) => {
     .attr("opacity", 1)
     .transition()
     .duration(SCAN_DURATION / 2)
-    .ease(d3.easeCubicIn) // equals to easePolyIn.exponent(3)
+    .ease(d3.easeCubicIn) // equivalent to easePolyIn.exponent(3)
     .attr("opacity", 0)
     .remove()
 
@@ -142,7 +143,7 @@ const updateScanResult = ({ angle, distance }) => {
       .attr("opacity", 1)
       .transition()
       .duration(SCAN_DURATION / 2)
-      .ease(d3.easeCubicIn) // equals to easePolyIn.exponent(3)
+      .ease(d3.easeCubicIn) // equivalent to easePolyIn.exponent(3)
       .attr("opacity", 0)
       .remove()
   }

@@ -7,8 +7,8 @@ constexpr int MAX_DETECT_DISTANCE = 200;
 constexpr int READINGS_COUNT = 5;
 constexpr int MAX_CONSECUTIVE_ZEROS = 3;
 constexpr int SERVO_PIN = 9;
-constexpr int MIN_ANGLE = 15;
-constexpr int MAX_ANGLE = 165;
+constexpr int MIN_ANGLE = 15; // Minimum rotation angle for the servo
+constexpr int MAX_ANGLE = 165; // Maximum rotation angle for the servo
 constexpr int CENTER_ANGLE = 90;
 constexpr int SCAN_SPEED = 1;
 constexpr unsigned long SCAN_INTERVAL = 40;
@@ -43,7 +43,7 @@ public:
   float filter(int currentReading) {
     int adjustedReading = handleZeroReading(currentReading);
     
-    // 使用簡單移動平均（Simple Moving Average，SMA）來減少隨機誤差影響。
+    // Use Simple Moving Average (SMA) to reduce the impact of random errors
     total -= readings[readIndex];
     readings[readIndex] = adjustedReading;
     total += readings[readIndex];
@@ -51,9 +51,11 @@ public:
     float sma = total / READINGS_COUNT;
     
     /**
-     * 使用指數移動平均（Exponential Moving Average，EMA）濾波算法。
-     * alpha 是新數值對對濾波結果的影響程度，影響響應性和平滑程度。
-     * 較大的 alpha 值會使濾波器更快地響應新的變化，較小的 alpha 值則會使輸出更平滑。
+     * Apply Exponential Moving Average (EMA) filtering algorithm.
+     * Alpha determines the influence of new values on the filtered result,
+     * affecting responsiveness and smoothness.
+     * A larger alpha value makes the filter respond more quickly to new changes,
+     * while a smaller alpha value results in a smoother output.
      */
     filteredDistance = alpha * sma + (1 - alpha) * filteredDistance;
     
@@ -62,9 +64,11 @@ public:
 
 private:
   /**
-   * 處理讀數為 0 的狀況：
-   * 1. 若不小於最大連續可為零次數（MAX_CONSECUTIVE_ZEROS），則視為物體位於偵測範圍外，將結果設定為最大可偵測距離（MAX_DISTANCE）。
-   * 2. 若小於最大連續可為零次數，則視為偶發狀況，使用上一次偵測到的非 0 讀數為此次結果。
+   * Handle zero readings:
+   * 1. If the number of consecutive zeros is greater than or equal to MAX_CONSECUTIVE_ZEROS,
+   *    assume the object is out of detection range and set the result to MAX_DETECT_DISTANCE.
+   * 2. If the number of consecutive zeros is less than MAX_CONSECUTIVE_ZEROS,
+   *    treat it as an occasional occurrence and use the last non-zero reading as the result.
    */
   int handleZeroReading(int reading) {
     if (reading == 0) {
@@ -94,7 +98,7 @@ void setup() {
 }
 
 void loop() {
-    // 使用非阻塞延時設計可以確保程式長時間運行且不會發生溢位
+    // Use non-blocking delay design to ensure long-term program operation without overflow
     unsigned long currentTime = millis();
     if (currentTime - lastScanTime >= SCAN_INTERVAL) {
         rotateRadar();
