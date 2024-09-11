@@ -9,7 +9,6 @@ const io = require("socket.io")(http, {
 })
 const { SerialPort } = require("serialport")
 const { ReadlineParser } = require("@serialport/parser-readline")
-const { log } = require("console")
 
 // Please adjust due to your own system
 const port = new SerialPort({
@@ -20,7 +19,6 @@ const port = new SerialPort({
 const parser = port.pipe(new ReadlineParser({ delimiter: "\r\n" }))
 
 parser.on("data", (data) => {
-  console.log("Data from Arduino", data)
   const [angle, distance] = data.split(",").map(Number)
   io.emit("radarData", { angle, distance })
 })
