@@ -21,9 +21,13 @@ This project implements a radar system using Arduino, a web server, and a browse
 
 The Arduino sketch controls a servo (SG90) and an ultrasonic sensor (HC-SR04) to create a scanning radar effect.
 
+### Breadboard Diagram
+
+![arduino-radar_breadboard](diagram/arduino-radar_breadboard.png)
+
 ### Wiring Diagram
 
-[To be added]
+![arduino-radar_wiring](diagram/arduino-radar_wiring.png)
 
 ### Key Features:
 
