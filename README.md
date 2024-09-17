@@ -2,6 +2,12 @@
 
 This project implements a radar system using Arduino, a web server, and a browser-based visualization.
 
+![Arduino Radar in Action](gif/arduino-radar-near.gif)
+
+> ▶ Watch Full Demo Video
+> [Near View](https://drive.google.com/file/d/1RLs03wlpeaNTwjk6VNf9T1w8mKSTP_-Q/view)
+> [Far View](https://drive.google.com/file/d/1eQOlattvHD124RTTWSIaN7CsMJj24V4R/view)
+
 ## Components
 
 1. Arduino sketch (`arduino-radar.ino`)
